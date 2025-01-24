@@ -4,6 +4,9 @@ import fs from "fs/promises";
 
 const app = express();
 
+// Middleware to set response type to JSON
+app.use(express.json());
+
 // Set up Handlebars as the view engine
 app.engine("handlebars", engine({
     layoutsDir: "./templates/layouts",
@@ -36,7 +39,18 @@ app.get("/", async (request, response) => {
             footerData = {}; // Provide a default value or handle the error as needed
         }
 
-        response.render("index", { movies: movies.data}); // Pass the movies and footer data to the template
+        response.render("index", { movies: movies.data, footer: footerData }); // Pass the movies and footer data to the template
+    } catch (error) {
+        console.error("Error fetching API data:", error);
+        response.status(500).send("Error fetching API data");
+    }
+});
+
+// Add a test route to return JSON data directly
+app.get("/test/movies", async (request, response) => {
+    try {
+        const movies = await fetchData("https://plankton-app-xhkom.ondigitalocean.app/api/movies");
+        response.json({ movies: movies.data });
     } catch (error) {
         console.error("Error fetching API data:", error);
         response.status(500).send("Error fetching API data");
@@ -47,8 +61,7 @@ app.get("/", async (request, response) => {
 app.get("/movies/:id", async (request, response) => {
     try {
         const movieId = request.params.id;
-        const apiResponse = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/movies/${movieId}`);
-        const movie = await apiResponse.json();
+        const movie = await fetchData(`https://plankton-app-xhkom.ondigitalocean.app/api/movies/${movieId}`);
         
         // Fetch footer data
         let footerData;
@@ -70,7 +83,9 @@ app.get("/movies/:id", async (request, response) => {
 // Serve static files from the ./static directory
 app.use("/static", express.static("./static"));
 
-// Start the server on port 3080
-app.listen(3080, () => {
-    console.log("Server is running on http://localhost:3080");
+// Start the server on port 5080
+app.listen(5080, () => {
+    console.log("Server is running on http://localhost:5080");
 });
+
+export default app; // Export the app for testing
