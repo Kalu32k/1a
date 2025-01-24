@@ -1,81 +1,76 @@
 import express from "express";
+import { engine } from "express-handlebars";
 import fs from "fs/promises";
 
 const app = express();
 
+// Set up Handlebars as the view engine
+app.engine("handlebars", engine({
+    layoutsDir: "./templates/layouts",
+    defaultLayout: "layout"
+}));
+app.set("view engine", "handlebars");
+app.set("views", "./templates");
+
+// Function to fetch data using fetch
+const fetchData = async (url) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+};
+
+// Route to render the index.handlebars file with API data
 app.get("/", async (request, response) => {
-    // try {
-        const buf = await fs.readFile("./content/index.html");
-        const text = buf.toString();
+    try {
+        const movies = await fetchData("https://plankton-app-xhkom.ondigitalocean.app/api/movies");
+        
+        // Fetch footer data
+        let footerData;
+        try {
+            const footerContent = await fs.readFile("./static/FrontPage-content.json");
+            footerData = JSON.parse(footerContent);
+        } catch (footerError) {
+            console.error("Error reading footer data:", footerError);
+            footerData = {}; // Provide a default value or handle the error as needed
+        }
 
-/*         const jsonBuf = await fs.readFile(".static/FrontPage-content.json");
-        const jsonData = JSON.parse(jsonBuf); */
-
-/*         htmlContent = loadFrontPageContent(htmlContent, jsonData);
-        htmlContent = addFrontPageContent(htmlContent, jsonData);
-
-        response.send(htmlContent); */
-/*     }
-    catch (error) {
-        console.error("Error loading the page:", error);
-        response.status(500).send("An error occurred while loading the page.");
-    } */
-
-
-    response.send(text);
+        response.render("index", { movies: movies.data}); // Pass the movies and footer data to the template
+    } catch (error) {
+        console.error("Error fetching API data:", error);
+        response.status(500).send("Error fetching API data");
+    }
 });
 
-/* app.get("/content"), async (request, response) => {
-    const buf = await fs.readFile("./static/FrontPage-content.json");
-        if ()
-} */
+// Dynamic route to render the movie.handlebars file for each movie
+app.get("/movies/:id", async (request, response) => {
+    try {
+        const movieId = request.params.id;
+        const apiResponse = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/movies/${movieId}`);
+        const movie = await apiResponse.json();
+        
+        // Fetch footer data
+        let footerData;
+        try {
+            const footerContent = await fs.readFile("./static/FrontPage-content.json");
+            footerData = JSON.parse(footerContent);
+        } catch (footerError) {
+            console.error("Error reading footer data:", footerError);
+            footerData = {}; // Provide a default value or handle the error as needed
+        }
 
+        response.render("movie", { attributes: movie.data.attributes, footer: footerData }); // Pass the movie and footer data to the template
+    } catch (error) {
+        console.error("Error fetching movie data:", error);
+        response.status(500).send("Error fetching movie data");
+    }
+});
+
+// Serve static files from the ./static directory
 app.use("/static", express.static("./static"));
 
-app.listen(3080);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function handleRequest(request, response) {
-//     console.log(request.method, request.url);
-
-//     if (request.method == 'GET') {
-//         if (request.url == '/hello') {
-//             response.statusCode = 200;
-//             response.write("Hello, world!");
-//         } else if (request.url == "/goodbye") {
-//             response.statusCode = 200;
-//             response.write("Goodbye, world!");
-//         } else {
-//             // Give 404 error: url can not be found.
-//             response.statusCode = 404;
-//         }
-//     } else {
-//         // Give 405 error: method not allowed if not a GET request is made.
-//         response.statusCode = 405;
-//     }
-
-//     response.end();
-// }
-
-// const server = http.createServer(handleRequest);
-// server.listen(3080);
+// Start the server on port 3080
+app.listen(3080, () => {
+    console.log("Server is running on http://localhost:3080");
+});
