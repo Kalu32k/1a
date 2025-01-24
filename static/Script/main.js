@@ -45,7 +45,7 @@ async function addFrontPageContent() {
     navItems[i].innerHTML = frontPageContent.header.menu[i]
   }
 
-  //MAIN
+ /*  //MAIN
   document.querySelector('.search__label').innerHTML = frontPageContent.main.searchLabel
   document.querySelector('.search__input').setAttribute('placeholder', frontPageContent.main.searchInput)
   document.querySelector('.search__clear').innerHTML = frontPageContent.main.searchClear
@@ -60,7 +60,7 @@ async function addFrontPageContent() {
   document.querySelector('.filter-genre__dropdown-romance').innerHTML = frontPageContent.main.dropdownGenreRomance
   document.querySelector('.filter-genre__dropdown-kids').innerHTML = frontPageContent.main.dropdownGenreKids
   document.querySelector('.filter-btn__show-less').innerHTML = frontPageContent.main.btnShowLess
-  document.querySelector('.filter-btn__show-all').innerHTML = frontPageContent.main.btnShowAll
+  document.querySelector('.filter-btn__show-all').innerHTML = frontPageContent.main.btnShowAll */
 
   //FOOTER
   document.querySelector('.footer__social-title').innerHTML = frontPageContent.footer.socialTitle
@@ -75,26 +75,26 @@ async function addFrontPageContent() {
   document.querySelector('.footer__find-Us-country').innerHTML = frontPageContent.footer.findUsCountry
   document.querySelector('.footer__partners-title').innerHTML = frontPageContent.footer.partnersTitle
 }
-// Eventlistener for search input
-document.addEventListener('DOMContentLoaded', () => {
-  initMovies()
-  const searchInput = document.querySelector('.search__input')
-  const debouncedSearch = debounce((query) => {
-    if (query.length >= 3) {
-      executeSearch(query)
-    } else if (query.length === 0) {
-      createMovies()
-    } else {
-      console.log('För kort sökfras')
-    }
-  }, 300) // 300ms delay
+// // Eventlistener for search input
+// document.addEventListener('DOMContentLoaded', () => {
+//   // initMovies()
+  // const searchInput = document.querySelector('.search__input')
+  // const debouncedSearch = debounce((query) => {
+  //   if (query.length >= 3) {
+  //     executeSearch(query)
+  //   } else if (query.length === 0) {
+  //     createMovies()
+  //   } else {
+  //     console.log('För kort sökfras')
+  //   }
+  // }, 300) // 300ms delay
 
-  // Clear search field button
+ /*  // Clear search field button
   const clearButton = document.querySelector('.search__clear')
 
   clearButton.addEventListener('click', function () {
     searchInput.value = ''
     searchInput.focus()
-    createMovies()
-  })
-})
+    createMovies() */
+ /*  })
+}) */

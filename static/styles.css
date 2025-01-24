@@ -626,3 +626,7 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+.movie-image {
+  max-height: 50%;
+}
